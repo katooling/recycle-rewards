@@ -1,0 +1,16 @@
+{
+  "name": "recycle-rewards",
+  "version": "0.1.0",
+  "description": "Browser-only Recycle Rewards pilot concept for an ALDI Nord Berlin pilot.",
+  "private": true,
+  "scripts": {
+    "test:e2e": "playwright test",
+    "test:e2e:chromium": "playwright test --project=chromium",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:report": "playwright show-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.58.2"
+  }
+}
+

@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A browser-only Recycle Rewards pilot concept for Berlin.">
+    <title>Recycle Rewards</title>
+    <script>
+        try {
+            const theme = localStorage.getItem("recycleRewards.theme");
+            if (theme === "light" || theme === "dark") {
+                document.documentElement.dataset.theme = theme;
+            }
+        } catch (_error) {
+            // The app still works when browser storage is unavailable.
+        }
+    </script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-shell">
+        <header class="app-header">
+            <div class="brand-lockup">
+                <div class="brand-mark" aria-hidden="true">↻</div>
+                <div>
+                    <p class="eyebrow">ALDI Nord Berlin pilot concept</p>
+                    <h1>Recycle Rewards</h1>
+                    <p class="subtitle">Turn everyday packaging returns into grocery savings.</p>
+                </div>
+            </div>
+            <button id="themeToggle" class="button button-secondary theme-button" type="button" aria-label="Use dark theme" aria-pressed="false">Dark mode</button>
+        </header>
+
+        <main>
+            <section class="hero panel" aria-labelledby="heroTitle">
+                <div>
+                    <p class="eyebrow">Browser-only service simulation</p>
+                    <h2 id="heroTitle">Recycle more. Save on groceries.</h2>
+                    <p class="hero-copy">Try the customer journey, then inspect how the same returns affect a five-store Berlin pilot.</p>
+                </div>
+                <div class="hero-note">
+                    <span class="status-dot" aria-hidden="true"></span>
+                    <span>Demo data stays in this browser.</span>
+                </div>
+            </section>
+
+            <nav class="view-switcher" aria-label="Application view">
+                <button id="customerTab" class="view-tab active" type="button" role="tab" aria-selected="true" aria-controls="customerView">Customer kiosk</button>
+                <button id="storeTab" class="view-tab" type="button" role="tab" aria-selected="false" aria-controls="storeView">Pilot store view</button>
+            </nav>
+
+            <section id="customerView" class="view active" role="tabpanel" aria-labelledby="customerTab">
+                <div class="content-grid">
+                    <div class="primary-column">
+                        <section class="panel" aria-labelledby="customerSetupTitle">
+                            <div class="section-heading">
+                                <div>
+                                    <p class="eyebrow">Step 1</p>
+                                    <h2 id="customerSetupTitle">Set up your demo account</h2>
+                                </div>
+                                <span class="badge">Local only</span>
+                            </div>
+                            <div class="form-grid">
+                                <div class="field">
+                                    <label for="customerNameInput">Customer name</label>
+                                    <input id="customerNameInput" type="text" maxlength="40" placeholder="Demo Customer" autocomplete="name">
+                                </div>
+                                <div class="field">
+                                    <label for="customerStoreSelect">Return store</label>
+                                    <select id="customerStoreSelect"></select>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="panel kiosk-panel" aria-labelledby="kioskTitle">
+                            <div class="section-heading">
+                                <div>
+                                    <p class="eyebrow">Step 2</p>
+                                    <h2 id="kioskTitle">Use the recycling kiosk</h2>
+                                </div>
+                                <span class="kiosk-icon" aria-hidden="true">♻</span>
+                            </div>
+                            <p class="panel-copy">Choose the item you want to return. The demo checks the material and whether it is clean and empty.</p>
+                            <form id="returnForm" class="stack-form">
+                                <div class="field">
+                                    <label for="materialSelect">Material</label>
+                                    <select id="materialSelect" required></select>
+                                </div>
+                                <label class="checkbox-row" for="cleanItemCheckbox">
+                                    <input id="cleanItemCheckbox" type="checkbox" checked>
+                                    <span>
+                                        <strong>Item is clean and empty</strong>
+                                        <small>Contaminated packaging is rejected by the kiosk.</small>
+                                    </span>
+                                </label>
+                                <button class="button button-primary" type="submit">Return item</button>
+                            </form>
+                            <div id="returnFeedback" class="feedback" role="status" aria-live="polite" hidden></div>
+                        </section>
+
+                        <section class="panel" aria-labelledby="historyTitle">
+                            <div class="section-heading">
+                                <div>
+                                    <p class="eyebrow">Your activity</p>
+                                    <h2 id="historyTitle">Return history</h2>
+                                </div>
+                                <span id="historyCount" class="muted-label">0 returns</span>
+                            </div>
+                            <div id="returnHistory" class="history-list"></div>
+                        </section>
+                    </div>
+
+                    <aside class="secondary-column" aria-label="Customer rewards summary">
+                        <section class="panel rewards-panel" aria-labelledby="rewardsTitle">
+                            <p class="eyebrow">Step 3</p>
+                            <h2 id="rewardsTitle">Your rewards</h2>
+                            <div class="points-display">
+                                <span id="pointsBalance" class="points-value">0</span>
+                                <span class="points-label">points available</span>
+                            </div>
+                            <div class="progress-track" aria-hidden="true"><span id="pointsProgress" class="progress-fill"></span></div>
+                            <p id="pointsHint" class="small-copy">Earn 10 points to unlock a €1 grocery voucher.</p>
+                            <button id="redeemVoucherBtn" class="button button-primary full-width" type="button" disabled>Redeem €1 voucher</button>
+                        </section>
+
+                        <section class="metrics-grid" aria-label="Customer metrics">
+                            <div class="metric-card">
+                                <span class="metric-label">Accepted items</span>
+                                <strong id="acceptedCount">0</strong>
+                            </div>
+                            <div class="metric-card">
+                                <span class="metric-label">Vouchers used</span>
+                                <strong id="redeemedCount">0</strong>
+                            </div>
+                            <div class="metric-card">
+                                <span class="metric-label">Rejected items</span>
+                                <strong id="rejectedCount">0</strong>
+                            </div>
+                            <div class="metric-card">
+                                <span class="metric-label">Store</span>
+                                <strong id="customerStoreLabel">—</strong>
+                            </div>
+                        </section>
+
+                        <section class="panel info-panel">
+                            <p class="eyebrow">Pilot rule</p>
+                            <p>Every accepted item earns one point. Ten points can be exchanged for a €1 demo voucher.</p>
+                            <p class="muted-label">This is a coursework prototype. It is not a real voucher or customer account.</p>
+                        </section>
+                    </aside>
+                </div>
+            </section>
+
+            <section id="storeView" class="view" role="tabpanel" aria-labelledby="storeTab" hidden>
+                <div class="content-grid">
+                    <div class="primary-column">
+                        <section class="panel" aria-labelledby="dashboardTitle">
+                            <div class="section-heading">
+                                <div>
+                                    <p class="eyebrow">Operations snapshot</p>
+                                    <h2 id="dashboardTitle">Berlin pilot store dashboard</h2>
+                                </div>
+                                <span class="badge">Five-store pilot</span>
+                            </div>
+                            <div class="field dashboard-store-field">
+                                <label for="dashboardStoreSelect">Pilot store</label>
+                                <select id="dashboardStoreSelect"></select>
+                            </div>
+                            <div class="metrics-grid dashboard-metrics">
+                                <div class="metric-card"><span class="metric-label">Accepted items</span><strong id="dashboardAcceptedCount">0</strong></div>
+                                <div class="metric-card"><span class="metric-label">Rejected items</span><strong id="dashboardRejectedCount">0</strong></div>
+                                <div class="metric-card"><span class="metric-label">Points issued</span><strong id="dashboardPointsIssued">0</strong></div>
+                                <div class="metric-card"><span class="metric-label">Fill level</span><strong id="dashboardFillLevel">0%</strong></div>
+                            </div>
+                        </section>
+
+                        <section class="panel" aria-labelledby="capacityTitle">
+                            <div class="section-heading">
+                                <div>
+                                    <p class="eyebrow">Kiosk capacity</p>
+                                    <h2 id="capacityTitle">Collection readiness</h2>
+                                </div>
+                                <span id="capacityStatusBadge" class="badge badge-success">Ready</span>
+                            </div>
+                            <div class="capacity-reading">
+                                <span id="capacityReading">0 of 10 items</span>
+                                <span id="lastCollectionLabel" class="muted-label">No collection recorded</span>
+                            </div>
+                            <div class="capacity-track" role="progressbar" aria-label="Kiosk fill level" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                                <span id="dashboardCapacityProgress" class="progress-fill"></span>
+                            </div>
+                            <div id="capacityAlert" class="feedback warning" role="status" aria-live="polite" hidden></div>
+                            <button id="markCollectionBtn" class="button button-secondary" type="button" disabled>Mark collection complete</button>
+                        </section>
+
+                        <section class="panel" aria-labelledby="materialsTitle">
+                            <div class="section-heading">
+                                <div>
+                                    <p class="eyebrow">Material mix</p>
+                                    <h2 id="materialsTitle">Accepted returns by material</h2>
+                                </div>
+                            </div>
+                            <div id="materialSummary" class="summary-list"></div>
+                        </section>
+                    </div>
+
+                    <aside class="secondary-column">
+                        <section class="panel info-panel" aria-labelledby="pilotTitle">
+                            <p class="eyebrow">Pilot context</p>
+                            <h2 id="pilotTitle">A simple operating view</h2>
+                            <p>This dashboard turns local customer actions into a small store-level picture: participation, rejected items, points, and collection pressure.</p>
+                            <p class="muted-label">Capacity alerts begin at 80% of the demo kiosk capacity.</p>
+                        </section>
+                        <section class="panel" aria-labelledby="activityTitle">
+                            <div class="section-heading">
+                                <div>
+                                    <p class="eyebrow">Recent activity</p>
+                                    <h2 id="activityTitle">Store returns</h2>
+                                </div>
+                            </div>
+                            <div id="storeActivity" class="history-list"></div>
+                        </section>
+                    </aside>
+                </div>
+            </section>
+        </main>
+
+        <footer class="app-footer">
+            <span id="storageStatus">Demo data is saved in this browser.</span>
+            <button id="resetDataBtn" class="text-button" type="button">Reset demo data</button>
+        </footer>
+    </div>
+
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>
+
