@@ -12,7 +12,8 @@ There is no backend, account system, real voucher, barcode scanner, image recogn
 ## Run locally
 
 ```bash
-cd /Users/mkamar/Non_Work/Projects/recycle-rewards
+git clone https://github.com/katooling/recycle-rewards.git
+cd recycle-rewards
 npm install
 python3 -m http.server 8000
 ```
@@ -41,4 +42,3 @@ The project has no production build step. Configure GitHub Pages to deploy the `
 - Collection is recommended at 80% capacity.
 
 These are prototype values and are defined in `js/catalog.js`.
-
